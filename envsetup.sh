@@ -41,7 +41,7 @@ function hmm() {
 
     echo
     echo "Look at the source to view more functions. The complete list is:"
-    for i in `cat $T/build/envsetup.sh | sed -n "/^[ \t]*function /s/function \([a-z_]*\).*/\1/p" | sort | uniq`; do
+    for i in `cat $T/build/envsetup.sh |  sed -n "/^[[:blank:]]*function /s/function \([a-z_]*\).*/\1/p" | sort | uniq`; do
       echo "$i"
     done | column
 }
@@ -2031,9 +2031,9 @@ function pez {
     local retval=$?
     if [ $retval -ne 0 ]
     then
-        printf "\e[0;31mFAILURE\e[00m\n"
+        echo $'\E'"[0;31mFAILURE\e[00m"
     else
-        printf "\e[0;32mSUCCESS\e[00m\n"
+        echo $'\E'"[0;32mSUCCESS\e[00m"
     fi
     return $retval
 }
@@ -2055,9 +2055,9 @@ function mk_timer()
     local secs=$(($tdiff % 60))
     local ncolors=$(tput colors 2>/dev/null)
     if [ -n "$ncolors" ] && [ $ncolors -ge 8 ]; then
-        color_failed="\e[0;31m"
-        color_success="\e[0;32m"
-        color_reset="\e[0m"
+        color_failed=$'\E'"[0;31m"
+        color_success=$'\E'"[0;32m"
+        color_reset=$'\E'"[00m"
     else
         color_failed=""
         color_success=""
@@ -2065,9 +2065,9 @@ function mk_timer()
     fi
     echo
     if [ $ret -eq 0 ] ; then
-        printf "${color_success}#### make completed successfully "
+        echo -n "${color_success}#### make completed successfully "
     else
-        printf "${color_failed}#### make failed to build some targets "
+        echo -n "${color_failed}#### make failed to build some targets "
     fi
     if [ $hours -gt 0 ] ; then
         printf "(%02g:%02g:%02g (hh:mm:ss))" $hours $mins $secs
@@ -2076,7 +2076,8 @@ function mk_timer()
     elif [ $secs -gt 0 ] ; then
         printf "(%s seconds)" $secs
     fi
-    printf " ####${color_reset}\n\n"
+    echo " ####${color_reset}"
+    echo
     return $ret
 }
 
