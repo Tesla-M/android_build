@@ -1,11 +1,5 @@
 ## Clang configurations.
 
-# WITHOUT_CLANG covers both HOST and TARGET
-ifeq ($(WITHOUT_CLANG),true)
-WITHOUT_TARGET_CLANG := true
-WITHOUT_HOST_CLANG := true
-endif
-
 # Set LLVM version for DragonTC
 TARGET_DRAGONTC_VERSION := $(DRAGONTC_VERSION)
 
