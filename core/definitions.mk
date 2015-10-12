@@ -1773,9 +1773,8 @@ endef
 
 # Call jack
 #
-# $(1): jack extra arguments
 define call-jack
- JACK_VERSION=$(PRIVATE_JACK_VERSION) $(JACK) $(1)
+ JACK_VERSION=$(PRIVATE_JACK_VERSION) $(JACK) $(DEFAULT_JACK_EXTRA_ARGS)
 endef
 
 # Common definition to invoke javac on the host and target.
@@ -1885,7 +1884,7 @@ $(hide) if [ -s $(PRIVATE_JACK_INTERMEDIATES_DIR)/java-source-list-uniq ] ; then
 else \
     export tmpEcjArg=""; \
 fi; \
-$(call call-jack,$(PRIVATE_JACK_EXTRA_ARGS)) \
+$(call call-jack) \
     $(strip $(PRIVATE_JACK_FLAGS)) \
     $(strip $(PRIVATE_JACK_DEBUG_FLAGS)) \
     $(if $(NO_OPTIMIZE_DX), \
@@ -1921,7 +1920,7 @@ define transform-jar-to-jack
 	$(hide) mkdir -p $@.tmpjill.res
 	$(hide) $(call unzip-jar-files,$<,$@.tmpjill.res)
 	$(hide) find $@.tmpjill.res -iname "*.class" -delete
-	$(hide) $(call call-jack,$(PRIVATE_JACK_EXTRA_ARGS)) \
+	$(hide) $(call call-jack) \
         -D jack.import.resource.policy=keep-first \
         -D jack.import.type.policy=keep-first \
 	    --import $@.tmpjill.jack \
@@ -1965,7 +1964,7 @@ $(hide) if [ -s $(PRIVATE_JACK_INTERMEDIATES_DIR)/java-source-list-uniq ] ; then
 else \
     export tmpEcjArg=""; \
 fi; \
-$(call call-jack,$(PRIVATE_JACK_EXTRA_ARGS)) \
+$(call call-jack) \
     $(strip $(PRIVATE_JACK_FLAGS)) \
     $(strip $(PRIVATE_JACK_DEBUG_FLAGS)) \
     $(if $(NO_OPTIMIZE_DX), \
