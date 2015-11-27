@@ -419,6 +419,13 @@ ifeq ($(USE_CLANG_PLATFORM_BUILD),true)
     endif
 endif
 
+# Add option to make gcc the default for device build
+ifeq ($(USE_GCC_PLATFORM_BUILD),true)
+    ifeq ($(my_clang),true)
+        my_clang := 
+    endif
+endif
+
 # Export compiler type for display
 ifeq ($(my_clang),)
     my_compiler := gcc
