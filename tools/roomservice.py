@@ -42,7 +42,7 @@ except ImportError:
 DEBUG = False
 default_manifest = ".repo/manifest.xml"
 
-custom_local_manifest = ".repo/local_manifests/slim_manifest.xml"
+custom_local_manifest = ".repo/local_manifests/tesla_manifest.xml"
 custom_default_revision = "6.0"
 custom_dependencies = "tesla.dependencies"
 org_manifest = "Tesla-M-Devices"  # leave empty if org is provided in manifest
