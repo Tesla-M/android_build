@@ -18,83 +18,63 @@
 Given a target-files zipfile, produces an OTA package that installs
 that build.  An incremental OTA is produced if -i is given, otherwise
 a full OTA is produced.
-
 Usage:  ota_from_target_files [flags] input_target_files output_ota_package
-
   --board_config  <file>
       Deprecated.
-
   -k (--package_key) <key> Key to use to sign the package (default is
       the value of default_system_dev_certificate from the input
       target-files's META/misc_info.txt, or
       "build/target/product/security/testkey" if that value is not
       specified).
-
       For incremental OTAs, the default value is based on the source
       target-file, not the target build.
-
   -i  (--incremental_from)  <file>
       Generate an incremental OTA using the given target-files zip as
       the starting build.
-
   --full_radio
       When generating an incremental OTA, always include a full copy of
       radio image. This option is only meaningful when -i is specified,
       because a full radio is always included in a full OTA if applicable.
-
   -v  (--verify)
       Remount and verify the checksums of the files written to the
       system and vendor (if used) partitions.  Incremental builds only.
-
   -o  (--oem_settings)  <file>
       Use the file to specify the expected OEM-specific properties
       on the OEM partition of the intended device.
-
   -w  (--wipe_user_data)
       Generate an OTA package that will wipe the user data partition
       when installed.
-
   -n  (--no_prereq)
       Omit the timestamp prereq check normally included at the top of
       the build scripts (used for developer OTA packages which
       legitimately need to go back and forth).
-
   -e  (--extra_script)  <file>
       Insert the contents of file at the end of the update script.
-
   -a  (--aslr_mode)  <on|off>
       Specify whether to turn on ASLR for the package (on by default).
-
   -2  (--two_step)
       Generate a 'two-step' OTA package, where recovery is updated
       first, so that any changes made to the system partition are done
       using the new recovery (new kernel, etc.).
-
   --block
       Generate a block-based OTA if possible.  Will fall back to a
       file-based OTA if the target_files is older and doesn't support
       block-based OTAs.
-
   -b  (--binary)  <file>
       Use the given binary as the update-binary in the output package,
       instead of the binary in the build's target_files.  Use for
       development only.
-
   -t  (--worker_threads) <int>
       Specifies the number of worker-threads that will be used when
       generating patches for incremental updates (defaults to 3).
-
   --backup <boolean>
       Enable or disable the execution of backuptool.sh.
       Disabled by default.
-
   --override_device <device>
       Override device-specific asserts. Can be a comma-separated list.
-
   --override_prop <boolean>
       Override build.prop items with custom vendor init.
       Enabled when TARGET_UNIFIED_DEVICE is defined in BoardConfig
-
 """
 
 import sys
@@ -275,7 +255,6 @@ class Item(object):
     all children and determine the best strategy for using set_perm_recursive
     and set_perm to correctly chown/chmod all the files to their desired
     values.  Recursively calls itself for all descendants.
-
     Returns a dict of {(uid, gid, dmode, fmode, selabel, capabilities): count}
     counting up all descendants of this node.  (dmode or fmode may be None.)
     Also sets the best_subtree of each directory Item to the (uid, gid, dmode,
@@ -451,6 +430,8 @@ def GetOemProperty(name, oem_props, oem_dict, info_dict):
   return GetBuildProp(name, info_dict)
 
 def CalculateFingerprint(oem_props, oem_dict, info_dict):
+  if OPTIONS.override_prop:
+    return GetBuildProp("ro.build.date.utc", info_dict)
   if oem_props is None:
     return GetBuildProp("ro.build.fingerprint", info_dict)
   return "%s/%s/%s:%s" % (
@@ -618,6 +599,17 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   system_progress = 0.75
 
+  script.Print("******************************************************");
+  script.Print(" _________  ________   ______   _____          _     ");  
+  script.Print("|  _   _  ||_   __  |.' ____ \ |_   _|        / \    ");  
+  script.Print("|_/ | | \_|  | |_ \_|| (___ \_|  | |         / _ \    "); 
+  script.Print("    | |      |  _| _  _.____`.   | |   _    / ___ \    ");
+  script.Print("   _| |_    _| |__/ || \____) | _| |__/ | _/ /   \ \_  ");
+  script.Print("  |_____|  |________| \______.'|________||____| |____| ");
+  script.Print("                   AOSP Marshmallow                    "); 
+  script.Print("              A Ground Zero Roms Project           ");
+  script.Print("******************************************************"); 
+
   if OPTIONS.wipe_user_data:
     system_progress -= 0.1
   if HasVendorPartition(input_zip):
@@ -705,6 +697,12 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     if block_based:
       script.Unmount("/system")
 
+    script.Print("Flashing SuperSU...")
+    common.ZipWriteStr(output_zip, "supersu/supersu.zip",
+                   ""+input_zip.read("SYSTEM/addon.d/UPDATE-SuperSU.zip"))
+    script.Mount("/system")
+    script.FlashSuperSU()
+
   script.ShowProgress(0.05, 5)
   script.WriteRawImage("/boot", "boot.img")
 
@@ -738,7 +736,7 @@ endif;
   common.ZipWriteStr(output_zip, "system/build.prop",
                      ""+input_zip.read("SYSTEM/build.prop"))
 
-  common.ZipWriteStr(output_zip, "META-INF/org/cyanogenmod/releasekey",
+  common.ZipWriteStr(output_zip, "META-INF/org/slimroms/releasekey",
                      ""+input_zip.read("META/releasekey.txt"))
 
 def WritePolicyConfig(file_name, output_zip):
@@ -822,10 +820,11 @@ def WriteBlockIncrementalOTAPackage(target_zip, source_zip, output_zip):
   # devices with thumbprints are all using file-based OTAs. Long term we
   # should factor out the common parts into a shared one to avoid further
   # divergence.
-  source_fp = GetBuildProp("ro.build.fingerprint", OPTIONS.source_info_dict)
-  target_fp = GetBuildProp("ro.build.fingerprint", OPTIONS.target_info_dict)
-  metadata["pre-build"] = source_fp
-  metadata["post-build"] = target_fp
+  if not OPTIONS.override_prop:
+    source_fp = GetBuildProp("ro.build.fingerprint", OPTIONS.source_info_dict)
+    target_fp = GetBuildProp("ro.build.fingerprint", OPTIONS.target_info_dict)
+    metadata["pre-build"] = source_fp
+    metadata["post-build"] = target_fp
 
   source_boot = common.GetBootableImage(
       "/tmp/boot.img", "boot.img", OPTIONS.source_tmp, "BOOT",
