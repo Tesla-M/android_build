@@ -93,4 +93,8 @@ else
 $(info   TARGET_KERNEL_TOOLCHAIN=$(TARGET_GCC_VERSION))
 endif
 $(info =======================================================)
+ifeq ($(TARGET_DRAGONTC_VERSION),)
+else
+$(info   CLANG_VERSION=$(TARGET_DRAGONTC_VERSION))
+endif
 endif
