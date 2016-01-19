@@ -1916,18 +1916,17 @@ endef
 
 define transform-jar-to-jack
 	$(hide) mkdir -p $(dir $@)
-	$(JILL) $(PRIVATE_JILL_FLAGS) --output $@.tmpjill.jack $<
 	$(hide) mkdir -p $@.tmpjill.res
 	$(hide) $(call unzip-jar-files,$<,$@.tmpjill.res)
 	$(hide) find $@.tmpjill.res -iname "*.class" -delete
 	$(hide) $(call call-jack) \
+	    $(PRIVATE_JACK_FLAGS) \
         -D jack.import.resource.policy=keep-first \
         -D jack.import.type.policy=keep-first \
-	    --import $@.tmpjill.jack \
+	    --import $< \
 	    --import-resource $@.tmpjill.res \
 	    --output-jack $@
 	$(hide) rm -rf $@.tmpjill.res
-	$(hide) rm $@.tmpjill.jack
 endef
 
 
