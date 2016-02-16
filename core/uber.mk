@@ -98,7 +98,9 @@ LOCAL_DISABLE_STRICT := \
 	linker \
 	sensors.flounder \
 	libnvvisualizer \
-	libskia
+	libskia\
+	fio\
+	tcpdump
 
 LOCAL_FORCE_DISABLE_STRICT := \
 	libziparchive-host \
@@ -125,7 +127,9 @@ LOCAL_FORCE_DISABLE_STRICT := \
 	linker \
 	libc_malloc \
 	sensors.flounder \
-	libnvvisualizer
+	libnvvisualizer\
+	fio\
+	tcpdump
 
 DISABLE_STRICT := \
 	-fno-strict-aliasing
