@@ -87,7 +87,7 @@ $(info   TARGET_CPU_VARIANT=$(TARGET_CPU_VARIANT))
 $(info =======================================================)
 ifeq ($(TARGET_DRAGONTC_VERSION),)
 else
-$(info   CLANG_VERSION=$(TARGET_DRAGONTC_VERSION))
+$(info   CLANG_VERSION=$(DTC_VER))
 endif
 $(info   TARGET_GCC_VERSION=$(TARGET_GCC_VERSION))
 $(info   TARGET_NDK_GCC_VERSION=$(TARGET_NDK_GCC_VERSION))
