@@ -24,7 +24,7 @@ PRODUCT_PACKAGES := \
     Gallery2 \
     Email \
     Exchange2 \
-    Music \ 
+    Music \
     MusicFX \
     OneTimeInitializer \
     Provision \
