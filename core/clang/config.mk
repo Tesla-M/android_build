@@ -63,6 +63,11 @@ CLANG_CONFIG_EXTRA_CFLAGS += \
 CLANG_CONFIG_EXTRA_CPPFLAGS += \
   -Wno-inconsistent-missing-override
 
+# Force clang to always output color diagnostics.  Ninja will strip the ANSI
+# color codes if it is not running in a terminal.
+CLANG_CONFIG_EXTRA_CFLAGS += \
+  -fcolor-diagnostics
+
 CLANG_CONFIG_UNKNOWN_CFLAGS := \
   -finline-functions \
   -finline-limit=64 \
@@ -72,6 +77,34 @@ CLANG_CONFIG_UNKNOWN_CFLAGS := \
   -fno-tree-sra \
   -fprefetch-loop-arrays \
   -funswitch-loops \
+  -fgcse-after-reload \
+  -fgcse-las \
+  -fgcse-sm \
+  -fgraphite \
+  -fgraphite-identity \
+  -fipa-pta \
+  -fipa-cp \
+  -fipa-cp-clone \
+  -fipa-sra \
+  -fweb \
+  -floop-block \
+  -floop-interchange \
+  -floop-nest-optimize \
+  -floop-parallelize-all \
+  -ftree-parallelize-loops=4 \
+  -floop-strip-mine \
+  -fmodulo-sched \
+  -fmodulo-sched-allow-regmoves \
+  -frerun-cse-after-loop \
+  -frename-registers \
+  -fsection-anchors \
+  -ftree-loop-im \
+  -ftree-loop-ivcanon \
+  -fivopts \
+  -ftracer \
+  -mvectorize-with-neon-double \
+  -mvectorize-with-neon-quad \
+  -funsafe-loop-optimizations \
   -Werror=unused-but-set-parameter \
   -Werror=unused-but-set-variable \
   -Wmaybe-uninitialized \
@@ -88,7 +121,8 @@ CLANG_CONFIG_UNKNOWN_CFLAGS := \
   -Wno-unused-but-set-variable \
   -Wno-unused-local-typedefs \
   -Wunused-but-set-parameter \
-  -Wunused-but-set-variable
+  -Wunused-but-set-variable \
+  -fdiagnostics-color
 
 # Clang flags for all host rules
 CLANG_CONFIG_HOST_EXTRA_ASFLAGS :=
