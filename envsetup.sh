@@ -1096,13 +1096,13 @@ function coredump_setup()
 
 function coredump_enable()
 {
-	local PID=$1;
-	if [ -z "$PID" ]; then
-		printf "Expecting a PID!\n";
-		return;
-	fi;
-	echo "Setting core limit for $PID to infinite...";
-	adb shell prlimit $PID 4 -1 -1
+    local PID=$1;
+    if [ -z "$PID" ]; then
+        printf "Expecting a PID!\n";
+        return;
+    fi;
+    echo "Setting core limit for $PID to infinite...";
+    adb shell /system/bin/ulimit -p $PID -c unlimited
 }
 
 # core - send SIGV and pull the core for process
