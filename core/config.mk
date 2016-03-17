@@ -402,8 +402,6 @@ endif
 # ---------------------------------------------------------------
 # Generic tools.
 JACK := $(HOST_OUT_EXECUTABLES)/jack
-JACK_JAR := $(HOST_OUT_JAVA_LIBRARIES)/jack.jar
-JILL_JAR := $(HOST_OUT_JAVA_LIBRARIES)/jill.jar
 
 LEX := prebuilts/misc/$(BUILD_OS)-$(HOST_PREBUILT_ARCH)/flex/flex-2.5.39
 # The default PKGDATADIR built in the prebuilt bison is a relative path
@@ -463,7 +461,6 @@ endif
 # Turn off jack warnings by default.
 DEFAULT_JACK_EXTRA_ARGS += --verbose error
 
-JILL := java -Xmx3500m -jar $(JILL_JAR)
 PROGUARD := external/proguard/bin/proguard.sh
 JAVATAGS := build/tools/java-event-log-tags.py
 LLVM_RS_CC := $(HOST_OUT_EXECUTABLES)/llvm-rs-cc$(HOST_EXECUTABLE_SUFFIX)
