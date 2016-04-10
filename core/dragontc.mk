@@ -38,8 +38,34 @@ else
 endif
 
 # Disable modules that don't work with DragonTC. Split up by arch.
-DISABLE_DTC_arm :=
-DISABLE_DTC_arm64 := libm
+DISABLE_DTC_arm := \
+  libm \
+  libblasV8 \
+  libperfprofdcore \
+  libperfprofdutils \
+  perfprofd \
+  libjavacrypto \
+  libscrypt_static \
+  libmedia \
+  libRSDriver \
+  libRSCpuRef \
+  libRSSupport \
+  librsjni
+
+DISABLE_DTC_arm64 := \
+  libm \
+  libblasV8 \
+  libperfprofdcore \
+  libperfprofdutils \
+  perfprofd \
+  libjavacrypto \
+  libscrypt_static \
+  libmedia \
+  libRSDriver \
+  libRSCpuRef \
+  libRSSupport \
+  libLLVMObject \
+  librsjni
 
 # Set DISABLE_DTC based on arch
 DISABLE_DTC := \
@@ -65,11 +91,15 @@ DISABLE_POLLY_arm := \
   libLLVMMC \
   libminui \
   libF77blas \
+  libF77blasV8 \
   libRSCpuRef \
   libRS	\
   libRSDriver\
   libmedia \
-  libjni_latinime_common_static
+  libblasV8 \
+  libjni_latinime_common_static \
+  librsjni
+
 DISABLE_POLLY_arm64 := \
   libpng \
   libfuse \
@@ -82,15 +112,19 @@ DISABLE_POLLY_arm64 := \
   libLLVMSelectionDAG \
   libLLVMTransformUtils \
   libF77blas \
+  libF77blasV8 \
   libbccSupport \
   libblas \
+  libblasV8 \
   libpng \
   libfuse \
   libfuse_static \
   libRS \
+  libRSDriver \
   libstagefright_mpeg2ts \
   bcc_strip_attr \
-  libvixl
+  libvixl \
+  librsjni
 
 # Add version specific disables.
 ifeq (1,$(words $(filter 3.8 3.9,$(LLVM_PREBUILTS_VERSION))))
