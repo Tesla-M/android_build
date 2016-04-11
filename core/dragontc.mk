@@ -54,7 +54,10 @@ DISABLE_DTC_arm := \
   libavcodec \
   libstagefright \
   libLLVM \
-  libdl
+  libdl \
+  libc_freebsd \
+  libxml2 \
+  libcompiler_rt-extras
 
 DISABLE_DTC_arm64 := \
   libm \
@@ -97,6 +100,7 @@ DISABLE_POLLY_arm := \
   libLLVM \
   libLLVMCodeGen \
   libLLVMARMCodeGen\
+  libLLVMObject \
   libLLVMScalarOpts \
   libLLVMSupport \
   libLLVMMC \
@@ -112,7 +116,11 @@ DISABLE_POLLY_arm := \
   librsjni \
   libavcodec \
   healthd \
-  libdl
+  libdl \
+  libui \
+  libc_freebsd \
+  libandroidfw \
+  libxml2
 
 DISABLE_POLLY_arm64 := \
   libpng \
@@ -126,6 +134,7 @@ DISABLE_POLLY_arm64 := \
   libLLVMSupport \
   libLLVMSelectionDAG \
   libLLVMTransformUtils \
+  libLLVMAArch64CodeGen \
   libF77blas \
   libF77blasV8 \
   libbccSupport \
@@ -136,7 +145,9 @@ DISABLE_POLLY_arm64 := \
   libfuse_static \
   libRS \
   libRSDriver \
+  libstagefright \
   libstagefright_mpeg2ts \
+  libstagefright_mediafilter \
   bcc_strip_attr \
   libvixl \
   librsjni \
@@ -147,7 +158,16 @@ DISABLE_POLLY_arm64 := \
 # Add version specific disables.
 ifeq (1,$(words $(filter 3.8 3.9,$(LLVM_PREBUILTS_VERSION))))
   DISABLE_POLLY_arm64 += \
-       libLLVM \
+	healthd \
+	libandroid_runtime \
+	libblas \
+	libF77blas \
+	libF77blasV8 \
+	libgui \
+	libjni_latinime_common_static \
+	libLLVM \
+	libLLVMAArch64CodeGen \
+	libLLVMARMCodeGen \
 	libLLVMAnalysis \
 	libLLVMScalarOpts \
 	libLLVMCore \
@@ -157,10 +177,19 @@ ifeq (1,$(words $(filter 3.8 3.9,$(LLVM_PREBUILTS_VERSION))))
 	libLLVMSupport \
 	libLLVMTransformObjCARC \
 	libLLVMVectorize \
-	libgui \
-	libandroid_runtime \
+	libmedia \
+	libminui \
+	libprotobuf-cpp-lite \
+	libRS \
+	libRSCpuRef \
+	libRSDriver \
+	libRSSupport \
 	libunwind_llvm \
-	libvixl
+	libvixl \
+	libvterm \
+	libxml2 \
+	libstagefright \
+	libstagefright_mediafilter
 endif
 
 # Set DISABLE_POLLY based on arch
