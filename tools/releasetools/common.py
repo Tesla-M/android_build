@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import print_function
+
 import copy
 import errno
 import getopt
@@ -33,6 +35,17 @@ import blockimgdiff
 import rangelib
 
 from hashlib import sha1 as sha1
+
+try:
+  raw_input
+except NameError:
+  raw_input = input
+
+
+def iteritems(obj):
+  if hasattr(obj, 'iteritems'):
+    return obj.iteritems()
+  return obj.items()
 
 
 class Options(object):
@@ -70,6 +83,10 @@ OPTIONS = Options()
 # Values for "certificate" in apkcerts that mean special things.
 SPECIAL_CERT_STRINGS = ("PRESIGNED", "EXTERNAL")
 
+# Stash size cannot exceed cache_size * threshold.
+OPTIONS.cache_size = None
+OPTIONS.stash_threshold = 0.8
+
 
 class ExternalError(RuntimeError):
   pass
@@ -79,7 +96,7 @@ def Run(args, **kwargs):
   """Create and return a subprocess.Popen object, printing the command
   line on the terminal if -v was specified."""
   if OPTIONS.verbose:
-    print "  running: ", " ".join(args)
+    print("  running: ", " ".join(args))
   return subprocess.Popen(args, **kwargs)
 
 
@@ -189,7 +206,7 @@ def LoadBuildProp(read_helper):
   try:
     data = read_helper("SYSTEM/build.prop")
   except KeyError:
-    print "Warning: could not find SYSTEM/build.prop in %s" % zip
+    print("Warning: could not find SYSTEM/build.prop in %s" % zip)
     data = ""
   return LoadDictionaryFromLines(data.split("\n"))
 
@@ -217,7 +234,7 @@ def LoadRecoveryFSTab(read_helper, fstab_version, type):
   try:
     data = read_helper("RECOVERY/RAMDISK/etc/recovery.fstab")
   except KeyError:
-    print "Warning: could not find RECOVERY/RAMDISK/etc/recovery.fstab"
+    print("Warning: could not find RECOVERY/RAMDISK/etc/recovery.fstab")
     data = ""
 
   if fstab_version == 1:
@@ -249,7 +266,7 @@ def LoadRecoveryFSTab(read_helper, fstab_version, type):
           if i.startswith("length="):
             length = int(i[7:])
           else:
-            print "%s: unknown option \"%s\"" % (mount_point, i)
+            print("%s: unknown option \"%s\"" % (mount_point, i))
 
       d[mount_point] = Partition(mount_point=mount_point, fs_type=pieces[1],
                                  device=pieces[2], length=length,
@@ -301,7 +318,7 @@ def LoadRecoveryFSTab(read_helper, fstab_version, type):
 
 def DumpInfoDict(d):
   for k, v in sorted(d.items()):
-    print "%-25s = (%s) %s" % (k, type(v).__name__, v)
+    print("%-25s = (%s) %s" % (k, type(v).__name__, v))
 
 
 def BuildBootableImage(sourcedir, fs_config_file, info_dict=None):
@@ -455,15 +472,15 @@ def GetBootableImage(name, prebuilt_name, unpack_dir, tree_subdir,
 
   prebuilt_path = os.path.join(unpack_dir, "BOOTABLE_IMAGES", prebuilt_name)
   if os.path.exists(prebuilt_path):
-    print "using prebuilt %s from BOOTABLE_IMAGES..." % (prebuilt_name,)
+    print("using prebuilt %s from BOOTABLE_IMAGES..." % prebuilt_name)
     return File.FromLocalFile(name, prebuilt_path)
 
   prebuilt_path = os.path.join(unpack_dir, "IMAGES", prebuilt_name)
   if os.path.exists(prebuilt_path):
-    print "using prebuilt %s from IMAGES..." % (prebuilt_name,)
+    print("using prebuilt %s from IMAGES..." % prebuilt_name)
     return File.FromLocalFile(name, prebuilt_path)
 
-  print "building image from target_files %s..." % (tree_subdir,)
+  print("building image from target_files %s..." % tree_subdir)
   fs_config = "META/" + tree_subdir.lower() + "_filesystem_config.txt"
   data = BuildBootableImage(os.path.join(unpack_dir, tree_subdir),
                             os.path.join(unpack_dir, fs_config),
@@ -475,10 +492,8 @@ def GetBootableImage(name, prebuilt_name, unpack_dir, tree_subdir,
 
 def UnzipTemp(filename, pattern=None):
   """Unzip the given archive into a temporary directory and return the name.
-
   If filename is of the form "foo.zip+bar.zip", unzip foo.zip into a
   temp dir, then unzip bar.zip into that_dir/BOOTABLE_IMAGES.
-
   Returns (tempdir, zipobj) where zipobj is a zipfile.ZipFile (of the
   main file), open for reading.
   """
@@ -542,7 +557,7 @@ def GetKeyPasswords(keylist):
       if p.returncode == 0:
         # Encrypted key with empty string as password.
         key_passwords[k] = ''
-      elif stderr.startswith('Error decrypting key'):
+      elif stderr.startswith(b'Error decrypting key'):
         # Definitely encrypted key.
         # It would have said "Error reading key" if it didn't parse correctly.
         need_passwords.append(k)
@@ -562,10 +577,8 @@ def SignFile(input_name, output_name, key, password, align=None,
   """Sign the input_name zip/jar/apk, producing output_name.  Use the
   given key and password (the latter may be None if the key does not
   have a password.
-
   If align is an integer > 1, zipalign is run to align stored files in
   the output zip on 'align'-byte boundaries.
-
   If whole_file is true, use the "-w" option to SignApk to embed a
   signature that covers the whole file in the archive comment of the
   zip file.
@@ -637,11 +650,11 @@ def CheckSize(data, target, info_dict):
   if pct >= 99.0:
     raise ExternalError(msg)
   elif pct >= 95.0:
-    print
-    print "  WARNING: ", msg
-    print
+    print()
+    print("  WARNING: ", msg)
+    print()
   elif OPTIONS.verbose:
-    print "  ", msg
+    print("  ", msg)
 
 
 def ReadApkCerts(tf_zip):
@@ -673,25 +686,21 @@ COMMON_DOCSTRING = """
   -p  (--path)  <dir>
       Prepend <dir>/bin to the list of places to search for binaries
       run by this script, and expect to find jars in <dir>/framework.
-
   -s  (--device_specific) <file>
       Path to the python module containing device-specific
       releasetools code.
-
   -x  (--extra)  <key=value>
       Add a key/value pair to the 'extras' dict, which device-specific
       extension code may look at.
-
   -v  (--verbose)
       Show command lines being executed.
-
   -h  (--help)
       Display this usage message and exit.
 """
 
 def Usage(docstring):
-  print docstring.rstrip("\n")
-  print COMMON_DOCSTRING
+  print(docstring.rstrip("\n"))
+  print(COMMON_DOCSTRING)
 
 
 def ParseOptions(argv,
@@ -715,7 +724,7 @@ def ParseOptions(argv,
         list(extra_long_opts))
   except getopt.GetoptError as err:
     Usage(docstring)
-    print "**", str(err), "**"
+    print("**", str(err), "**")
     sys.exit(2)
 
   for o, a in opts:
@@ -788,7 +797,6 @@ class PasswordManager(object):
     """Get passwords corresponding to each string in 'items',
     returning a dict.  (The dict may have keys in addition to the
     values in 'items'.)
-
     Uses the passwords in $ANDROID_PW_FILE if available, letting the
     user edit that file to add more needed passwords.  If no editor is
     available, or $ANDROID_PW_FILE isn't define, prompts the user
@@ -811,7 +819,7 @@ class PasswordManager(object):
         current[i] = ""
 
       if not first:
-        print "key file %s still missing some passwords." % (self.pwfile,)
+        print("key file %s still missing some passwords." % self.pwfile)
         answer = raw_input("try to edit again? [y]> ").strip()
         if answer and answer[0] not in 'yY':
           raise RuntimeError("key passwords unavailable")
@@ -825,7 +833,7 @@ class PasswordManager(object):
     values.
     """
     result = {}
-    for k, v in sorted(current.iteritems()):
+    for k, v in sorted(iteritems(current)):
       if v:
         result[k] = v
       else:
@@ -846,7 +854,7 @@ class PasswordManager(object):
     f.write("# (Additional spaces are harmless.)\n\n")
 
     first_line = None
-    sorted_list = sorted([(not v, k, v) for (k, v) in current.iteritems()])
+    sorted_list = sorted((not v, k, v) for (k, v) in current.items())
     for i, (_, k, v) in enumerate(sorted_list):
       f.write("[[[  %s  ]]] %s\n" % (v, k))
       if not v and first_line is None:
@@ -871,13 +879,13 @@ class PasswordManager(object):
           continue
         m = re.match(r"^\[\[\[\s*(.*?)\s*\]\]\]\s*(\S+)$", line)
         if not m:
-          print "failed to parse password file: ", line
+          print("failed to parse password file: ", line)
         else:
           result[m.group(2)] = m.group(1)
       f.close()
     except IOError as e:
       if e.errno != errno.ENOENT:
-        print "error reading password file: ", str(e)
+        print("error reading password file: ", str(e))
     return result
 
 
@@ -924,11 +932,9 @@ def ZipWrite(zip_file, filename, arcname=None, perms=0o644,
 def ZipWriteStr(zip_file, zinfo_or_arcname, data, perms=None,
                 compress_type=None):
   """Wrap zipfile.writestr() function to work around the zip64 limit.
-
   Even with the ZIP64_LIMIT workaround, it won't allow writing a string
   longer than 2GiB. It gives 'OverflowError: size does not fit in an int'
   when calling crc32(bytes).
-
   But it still works fine to write a shorter string into a large zip file.
   We should use ZipWrite() whenever possible, and only use ZipWriteStr()
   when we know the string won't be too long.
@@ -978,7 +984,7 @@ class DeviceSpecificParams(object):
     """Keyword arguments to the constructor become attributes of this
     object, which is passed to all functions in the device-specific
     module."""
-    for k, v in kwargs.iteritems():
+    for k, v in iteritems(kwargs):
       setattr(self, k, v)
     self.extras = OPTIONS.extras
 
@@ -995,10 +1001,10 @@ class DeviceSpecificParams(object):
           if x == ".py":
             f = b
           info = imp.find_module(f, [d])
-        print "loaded device-specific extensions from", path
+        print("loaded device-specific extensions from", path)
         self.module = imp.load_module("device_specific", *info)
       except ImportError:
-        print "unable to load device-specific module; assuming none"
+        print("unable to load device-specific module; assuming none")
 
   def _DoCall(self, function_name, *args, **kwargs):
     """Call the named function in the device-specific module, passing
@@ -1134,7 +1140,7 @@ class Difference(object):
       th.start()
       th.join(timeout=300)   # 5 mins
       if th.is_alive():
-        print "WARNING: diff command timed out"
+        print("WARNING: diff command timed out")
         p.terminate()
         th.join(5)
         if th.is_alive():
@@ -1142,8 +1148,8 @@ class Difference(object):
           th.join()
 
       if err or p.returncode != 0:
-        print "WARNING: failure running %s:\n%s\n" % (
-            diff_program, "".join(err))
+        print("WARNING: failure running %s:\n%s\n" % (
+            diff_program, "".join(err)))
         self.patch = None
         return None, None, None
       diff = ptemp.read()
@@ -1165,7 +1171,7 @@ class Difference(object):
 
 def ComputeDifferences(diffs):
   """Call ComputePatch on all the Difference objects in 'diffs'."""
-  print len(diffs), "diffs to compute"
+  print(len(diffs), "diffs to compute")
 
   # Do the largest files first, to try and reduce the long-pole effect.
   by_size = [(i.tf.size, i) for i in diffs]
@@ -1191,13 +1197,13 @@ def ComputeDifferences(diffs):
         else:
           name = "%s (%s)" % (tf.name, sf.name)
         if patch is None:
-          print "patching failed!                                  %s" % (name,)
+          print("patching failed!                                  %s" % name)
         else:
-          print "%8.2f sec %8d / %8d bytes (%6.2f%%) %s" % (
-              dur, len(patch), tf.size, 100.0 * len(patch) / tf.size, name)
+          print("%8.2f sec %8d / %8d bytes (%6.2f%%) %s" % (
+              dur, len(patch), tf.size, 100.0 * len(patch) / tf.size, name))
       lock.release()
     except Exception as e:
-      print e
+      print(e)
       raise
 
   # start worker threads; wait for them all to finish.
@@ -1397,16 +1403,18 @@ def GetTypeAndDevice(mount_point, info):
 
 def ParseCertificate(data):
   """Parse a PEM-format certificate."""
+  from codecs import decode
   cert = []
   save = False
   for line in data.split("\n"):
     if "--END CERTIFICATE--" in line:
       break
     if save:
-      cert.append(line)
+      l = line.encode() if hasattr(line, 'encode') else line
+      cert.append(l)
     if "--BEGIN CERTIFICATE--" in line:
       save = True
-  cert = "".join(cert).decode('base64')
+  cert = decode(b"".join(cert), 'base64')
   return cert
 
 def MakeRecoveryPatch(input_dir, output_sink, recovery_img, boot_img,
@@ -1417,7 +1425,6 @@ def MakeRecoveryPatch(input_dir, output_sink, recovery_img, boot_img,
   should be efficient.)  Add it to the output zip, along with a shell
   script that is run from init.rc on first boot to actually do the
   patching and install the new recovery image.
-
   recovery_img and boot_img should be File objects for the
   corresponding images.  info should be the dictionary returned by
   common.LoadInfoDict() on the input target_files.
@@ -1451,7 +1458,6 @@ def MakeRecoveryPatch(input_dir, output_sink, recovery_img, boot_img,
 if [ -f /system/etc/recovery-transform.sh ]; then
   exec sh /system/etc/recovery-transform.sh %(recovery_size)d %(recovery_sha1)s %(boot_size)d %(boot_sha1)s
 fi
-
 if ! applypatch -c %(recovery_type)s:%(recovery_device)s:%(recovery_size)d:%(recovery_sha1)s; then
   applypatch %(bonus_args)s %(boot_type)s:%(boot_device)s:%(boot_size)d:%(boot_sha1)s %(recovery_type)s:%(recovery_device)s %(recovery_sha1)s %(recovery_size)d %(boot_sha1)s:/system/recovery-from-boot.p && log -t recovery "Installing new recovery image: succeeded" || log -t recovery "Installing new recovery image: failed"
 else
@@ -1490,6 +1496,6 @@ fi
     if found:
       break
 
-  print "putting script in", sh_location
+  print ("putting script in", sh_location)
 
   output_sink(sh_location, sh)

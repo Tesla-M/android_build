@@ -145,7 +145,7 @@ class EdifyGenerator(object):
            ", ".join(["%s" % (b,) for b in basebands]) +
            '; this device has baseband " + getprop("ro.baseband") + ".");' +
            ");")
-    self.script.append(self._WordWrap(cmd))
+    self.script.append(self.WordWrap(cmd))
 
   def RunBackup(self, command):
     self.script.append(('run_program("/tmp/install/bin/backuptool.sh", "%s");' % command))
@@ -285,7 +285,7 @@ class EdifyGenerator(object):
     for name, sha1 in file_list:
       cmd = ('sha1_check(read_file("{name}"), "{sha1}") || '
              'delete("{name}");'.format(name=name, sha1=sha1))
-      self.script.append(self.WordWrap(cmd))
+      self.script.append(self._WordWrap(cmd))
 
   def RenameFile(self, srcfile, tgtfile):
     """Moves a file from one location to another."""
@@ -299,7 +299,7 @@ class EdifyGenerator(object):
        skip the action if the file exists.  Used when a patch
        is later renamed."""
     cmd = ('sha1_check(read_file("%s"), %s) ||' % (tgtfile, tgtsha1))
-    self.script.append(self.WordWrap(cmd))
+    self.script.append(self._WordWrap(cmd))
 
   def ApplyPatch(self, srcfile, tgtfile, tgtsize, tgtsha1, *patchpairs):
     """Apply binary patches (in *patchpairs) to the given srcfile to
@@ -377,7 +377,7 @@ class EdifyGenerator(object):
     for d, l in symlink_list:
       by_dest.setdefault(d, []).append(l)
 
-    for dest, links in sorted(by_dest.iteritems()):
+    for dest, links in sorted(by_dest.items()):
       cmd = ('symlink("%s", ' % (dest,) +
              ",\0".join(['"' + i + '"' for i in sorted(links)]) + ");")
       self.script.append(self.WordWrap(cmd))
