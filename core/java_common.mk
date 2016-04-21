@@ -259,35 +259,15 @@ full_static_jack_libs := \
         JAVA_LIBRARIES,$(lib),$(LOCAL_IS_HOST_MODULE),COMMON)/classes.jack)
 
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_STATIC_JACK_LIBRARIES := $(full_static_jack_libs)
+full_shared_jack_libs := $(call jack-lib-files,$(LOCAL_JAVA_LIBRARIES),$(LOCAL_IS_HOST_MODULE))
+full_jack_deps := $(full_shared_jack_libs)
 
 ifndef LOCAL_IS_HOST_MODULE
-ifeq ($(LOCAL_SDK_VERSION),)
-$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_BOOTCLASSPATH_JAVA_LIBRARIES := $(call jack-lib-files,core-libart)
-else
-ifeq ($(LOCAL_SDK_VERSION)$(TARGET_BUILD_APPS),current)
-# LOCAL_SDK_VERSION is current and no TARGET_BUILD_APPS.
-$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_BOOTCLASSPATH_JAVA_LIBRARIES := $(call jack-lib-files,android_stubs_current)
-else ifeq ($(LOCAL_SDK_VERSION)$(TARGET_BUILD_APPS),system_current)
-$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_BOOTCLASSPATH_JAVA_LIBRARIES := $(call jack-lib-files,android_system_stubs_current)
-else
-$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_BOOTCLASSPATH_JAVA_LIBRARIES := $(call jack-lib-files,sdk_v$(LOCAL_SDK_VERSION))
-endif # current or system_current
-endif # LOCAL_SDK_VERSION
+# Turn off .toc optimization for apps build as we cannot build dexdump.
+ifeq (,$(TARGET_BUILD_APPS))
+full_jack_deps := $(patsubst %.jack, %.dex.toc, $(full_jack_deps))
+endif
 
-full_shared_jack_libs := $(call jack-lib-files,$(LOCAL_JAVA_LIBRARIES),$(LOCAL_IS_HOST_MODULE))
-full_jack_lib_deps := $(call jack-lib-deps,$(LOCAL_JAVA_LIBRARIES),$(LOCAL_IS_HOST_MODULE))
-
-else # LOCAL_IS_HOST_MODULE
-
-ifeq ($(USE_CORE_LIB_BOOTCLASSPATH),true)
-$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_BOOTCLASSPATH_JAVA_LIBRARIES := $(call jack-lib-files,core-libart-hostdex,$(LOCAL_IS_HOST_MODULE))
-full_shared_jack_libs := $(call jack-lib-files,$(LOCAL_JAVA_LIBRARIES),$(LOCAL_IS_HOST_MODULE))
-full_jack_lib_deps := $(call jack-lib-deps,$(LOCAL_JAVA_LIBRARIES),$(LOCAL_IS_HOST_MODULE))
-else
-$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_BOOTCLASSPATH_JAVA_LIBRARIES :=
-full_shared_jack_libs := $(call jack-lib-deps,$(LOCAL_JAVA_LIBRARIES),$(LOCAL_IS_HOST_MODULE))
-full_jack_lib_deps := $(full_shared_jack_libs)
-endif # USE_CORE_LIB_BOOTCLASSPATH
 endif # !LOCAL_IS_HOST_MODULE
 full_shared_jack_libs += $(LOCAL_JACK_CLASSPATH)
 full_jack_deps += $(full_static_jack_libs) $(LOCAL_JACK_CLASSPATH)
@@ -303,7 +283,8 @@ ifneq ($(apk_libraries),)
 
   # link against the jar with full original names (before proguard processing).
   full_shared_jack_libs += $(link_apk_jack_libraries)
-  full_jack_deps += $(link_apk_jack_libraries)
+  full_jack_libs += $(link_apk_jack_libraries)
+  full_jack_lib_deps += $(link_apk_jack_libraries)
 endif
 
 # This is set by packages that contain instrumentation, allowing them to
@@ -312,13 +293,13 @@ endif
 ifdef LOCAL_INSTRUMENTATION_FOR
    # link against the jar with full original names (before proguard processing).
    link_instr_classes_jack := $(link_instr_intermediates_dir.COMMON)/classes.noshrob.jack
-   full_shared_jack_libs += $(link_instr_classes_jack)
-   full_jack_deps += $(link_instr_classes_jack)
+   full_jack_libs += $(link_instr_classes_jack)
+   full_jack_lib_deps += $(link_instr_classes_jack)
 endif  # LOCAL_INSTRUMENTATION_FOR
 endif  # !LOCAL_IS_HOST_MODULE
 
 # Propagate local configuration options to this target.
-$(LOCAL_INTERMEDIATE_TARGETS) : PRIVATE_JACK_SHARED_LIBRARIES:= $(full_shared_jack_libs)
+$(LOCAL_INTERMEDIATE_TARGETS) : PRIVATE_ALL_JACK_LIBRARIES:= $(full_jack_libs)
 $(LOCAL_INTERMEDIATE_TARGETS) : PRIVATE_JARJAR_RULES := $(LOCAL_JARJAR_RULES)
 
 endif  # need_compile_java
