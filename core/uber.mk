@@ -88,6 +88,14 @@ LOCAL_DISABLE_STRICT := \
 	liblog \
 	libc \
 	libbt-brcm_stack \
+	libbt-vendor \
+	libbluetooth_jni \
+	gatt_testtool \
+	libavmediaserviceextensions \
+	libqsap_sdk \
+	wpa_supplicant \
+	libstlport \
+	libwifi-hal-qcom \
 	libandroid_runtime \
 	libandroidfw \
 	libosi \
@@ -98,8 +106,8 @@ LOCAL_DISABLE_STRICT := \
 	linker \
 	sensors.flounder \
 	libnvvisualizer \
-	libskia\
-	fio\
+	libskia \
+	fio \
 	tcpdump
 
 LOCAL_FORCE_DISABLE_STRICT := \
@@ -127,9 +135,10 @@ LOCAL_FORCE_DISABLE_STRICT := \
 	linker \
 	libc_malloc \
 	sensors.flounder \
-	libnvvisualizer\
-	fio\
-	tcpdump
+	libnvvisualizer \
+	fio \
+	tcpdump \
+	libavmediaserviceextensions
 
 DISABLE_STRICT := \
 	-fno-strict-aliasing
