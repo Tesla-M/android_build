@@ -79,7 +79,8 @@ DISABLE_DTC_arm64 := \
   healthd \
   recovery \
   libminui \
-  libLLVM
+  libLLVM \
+  libvixl
 
 # Set DISABLE_DTC based on arch
 DISABLE_DTC := \
