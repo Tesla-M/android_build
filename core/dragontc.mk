@@ -50,7 +50,7 @@ DISABLE_DTC_arm := \
   libRSDriver \
   libRSCpuRef \
   libRSSupport \
-  librsjni \
+  librs_jni \
   libavcodec \
   libstagefright \
   libLLVM \
@@ -73,7 +73,7 @@ DISABLE_DTC_arm64 := \
   libRSCpuRef \
   libRSSupport \
   libLLVMObject \
-  librsjni \
+  librs_jni \
   libavcodec \
   libstagefright \
   healthd \
@@ -116,7 +116,7 @@ DISABLE_POLLY_arm := \
   libmedia \
   libblasV8 \
   libjni_latinime_common_static \
-  librsjni \
+  librs_jni \
   libavcodec \
   healthd \
   libdl \
@@ -153,7 +153,7 @@ DISABLE_POLLY_arm64 := \
   libstagefright_mediafilter \
   bcc_strip_attr \
   libvixl \
-  librsjni \
+  librs_jni \
   libavcodec \
   healthd \
   libminui
@@ -179,7 +179,7 @@ ifeq (1,$(words $(filter 3.8 3.9,$(LLVM_PREBUILTS_VERSION))))
 	libmedia \
 	libblasV8 \
 	libjni_latinime_common_static \
-	librsjni \
+	librs_jni \
 	libavcodec \
 	healthd \
 	libdl \
