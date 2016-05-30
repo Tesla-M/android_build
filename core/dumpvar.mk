@@ -85,6 +85,10 @@ $(info   TARGET_ARCH=$(TARGET_ARCH))
 $(info   TARGET_ARCH_VARIANT=$(TARGET_ARCH_VARIANT))
 $(info   TARGET_CPU_VARIANT=$(TARGET_CPU_VARIANT))
 $(info =======================================================)
+ifeq ($(TARGET_DRAGONTC_VERSION),)
+else
+$(info   CLANG_VERSION=$(DTC_VER))
+endif
 $(info   TARGET_GCC_VERSION=$(TARGET_GCC_VERSION))
 $(info   TARGET_NDK_GCC_VERSION=$(TARGET_NDK_GCC_VERSION))
 ifdef TARGET_GCC_VERSION_ARM
@@ -92,5 +96,4 @@ $(info   TARGET_KERNEL_TOOLCHAIN=$(TARGET_GCC_VERSION_ARM))
 else
 $(info   TARGET_KERNEL_TOOLCHAIN=$(TARGET_GCC_VERSION))
 endif
-$(info =======================================================)
 endif

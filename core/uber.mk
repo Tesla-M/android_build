@@ -247,3 +247,142 @@ GRAPHITE_FLAGS := \
 	-floop-interchange \
 	-floop-strip-mine \
 	-floop-block
+
+######
+# Pipe
+######
+LOCAL_DISABLE_PIPE := \
+	libc_dns \
+	libc_tzcode \
+	$(NO_OPTIMIZATIONS)
+
+#################
+# Memory Sanitize
+#################
+DISABLE_SANITIZE_LEAK := \
+	libc_dns \
+	libc_tzcode \
+	$(NOOP_BLUETOOTH) \
+	$(NO_OPTIMIZATIONS)
+
+################
+# Cortex Tuning
+################
+LOCAL_DISABLE_CORTEX := \
+	bluetooth.default 
+
+ifeq (arm,$(TARGET_ARCH))
+CORTEX_FLAGS := \
+        -mcpu=cortex-a57.cortex-a53 \
+        -mtune=cortex-a57.cortex-a53
+endif
+
+# OpenMP
+ifeq ($(ENABLE_GOMP),true)
+LOCAL_DISABLE_GOMP := \
+	libblas \
+	libblasV8 \
+	libF77blas \
+	libF77blasV8 \
+	libc_tzcode \
+	libjni_latinime \
+	libmedia \
+	libnetd_client \
+	libscrypt_static \
+	libperfprofdcore \
+	libperfprofdutils \
+	libpng \
+	libstagefright \
+	libstagefright_mediafilter \
+	perfprofd \
+	$(NO_OPTIMIZATIONS)
+
+ ifneq ($(filter arm arm64,$(TARGET_ARCH)),)
+  ifneq ($(strip $(LOCAL_IS_HOST_MODULE)),true)
+   ifeq ($(filter $(LOCAL_DISABLE_GOMP), $(LOCAL_MODULE)),)
+    ifdef LOCAL_CFLAGS
+     LOCAL_CFLAGS += -fopenmp
+    else
+     LOCAL_CFLAGS := -fopenmp
+    endif
+   endif
+  endif
+ endif
+endif
+
+NO_OPTIMIZATIONS += \
+	libandroid_runtime_32 \
+	libbinder \
+	libbypass \
+	libc_tzcode \
+	libc++ \
+	libc++abi \
+	libcrypto \
+	libcrypto-host_32 \
+	libcompiler_rt \
+	libdex \
+	libfdlibm \
+	libft2 \
+	libFraunhoferAAC \
+	libharfbuzz_ng \
+	libharfbuzz_ng_32 \
+	libhwui \
+	libicui18n \
+	libinput \
+	libjni_latinime_common_static \
+	libloc_core \
+	liblog \
+	libmedia_jni \
+	libmm-qcamera \
+	libmmcamera_interface \
+	libmmjpeg_interface_32 \
+	libmmcamera_interface_32 \
+	libmmjpeg_interface \
+	libmcldScript \
+	libmcldMC \
+	libmedia_jni \
+	libmedia_jni_32 \
+	libmincrypt \
+	libnativebridge \
+	libnfc-nci_32 \
+	libnfc-nci \
+	libnfc_nci_jni \
+	libpcap \
+	libpdfiumcore \
+	libpdfium \
+	libperfprofdcore \
+	libqdutils \
+	libqomx_core \
+	libpdfiumcore_32 \
+	libRSCpuRef \
+	libRSDriver \
+	libRSSupport \
+	libril \
+	librilutils \
+	librilutils_static \
+	libscrypt_static \
+	libsfntly \
+	libskia \
+	libsqlite_jni_32 \
+	libselinux \
+	libsfntly \
+	libssh \
+	libwebrtc_spl \
+	libwebp-decode \
+	libwebp-encode \
+	libxml2 \
+	fsck.f2fs \
+	linker \
+	logd \
+	logcat \
+	make_f2fs \
+	mm-qcamera-app \
+	mm-qcamera-app_32 \
+	mm-jpeg-interface-test \
+	mm-qcamera-app \
+	mdnsd \
+	nfc_nci.bcm2079x.default \
+	netd \
+	pppd \
+	racoon \
+	rsg-generator
