@@ -30,6 +30,15 @@ else
   endif
 endif
 
+# Many qcom modules don't correctly set a dependency on the kernel headers. Fix it for them,
+# but warn the user.
+ifneq (,$(findstring $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include,$(LOCAL_C_INCLUDES)))
+  ifeq (,$(findstring $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr,$(LOCAL_ADDITIONAL_DEPENDENCIES)))
+    $(warning $(LOCAL_MODULE) uses kernel headers, but does not depend on them!)
+    LOCAL_ADDITIONAL_DEPENDENCIES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
+  endif
+endif
+
 # Copyright (C) 2014-2015 UBER
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
