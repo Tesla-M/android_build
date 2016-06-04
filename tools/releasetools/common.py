@@ -1302,7 +1302,7 @@ class BlockDifference(object):
     # Unlike pre-install verification, clobbered_blocks should not be ignored.
     ranges = self.tgt.care_map
     ranges_str = ranges.to_string_raw()
-    script.AppendExtra('if range_sha1("%s", "%s") == "%s" then' % (
+    script.AppendExtra('if true || range_sha1("%s", "%s") == "%s" then' % (
                        self.device, ranges_str,
                        self.tgt.TotalSha1(include_clobbered_blocks=True)))
 
@@ -1310,7 +1310,7 @@ class BlockDifference(object):
     # Verify that extended blocks are really zeroed out.
     if self.tgt.extended:
       ranges_str = self.tgt.extended.to_string_raw()
-      script.AppendExtra('if range_sha1("%s", "%s") == "%s" then' % (
+      script.AppendExtra('if true || range_sha1("%s", "%s") == "%s" then' % (
                          self.device, ranges_str,
                          self._HashZeroBlocks(self.tgt.extended.size())))
       script.Print('Verified the updated %s image.' % (partition,))
