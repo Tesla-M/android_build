@@ -18,8 +18,6 @@
 
 PRODUCT_PACKAGES := \
     Bluetooth \
-    CalendarProvider \
-    ContactsProvider \
     CertInstaller \
     FusedLocation \
     InputDevices
@@ -39,7 +37,6 @@ PRODUCT_PACKAGES += \
     local_time.default
 
 PRODUCT_PACKAGES += \
-    BackupRestoreConfirmation \
     DefaultContainerService \
     SettingsProvider \
     Shell \
@@ -65,7 +62,6 @@ PRODUCT_PACKAGES += \
     libfilterfw \
     libgatekeeper \
     libkeystore \
-    libsqlite_jni \
     libwilhelm \
     libdrmframework_jni \
     libdrmframework \
