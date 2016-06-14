@@ -23,7 +23,6 @@ PRODUCT_DEVICE := generic
 PRODUCT_NAME := core
 
 PRODUCT_PACKAGES += \
-    BackupRestoreConfirmation \
     DownloadProvider \
     HTMLViewer \
     MediaProvider \
@@ -63,7 +62,6 @@ PRODUCT_PACKAGES += \
     libfilterfw \
     libkeystore \
     libgatekeeper \
-    libsqlite_jni \
     libwilhelm \
     logd \
     make_ext4fs \
@@ -75,11 +73,8 @@ PRODUCT_PACKAGES += \
     uiautomator \
     uncrypt \
     voip-common \
-    webview \
     wifi-service
 
-PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.software.webview.xml:system/etc/permissions/android.software.webview.xml
 
 # The order of PRODUCT_BOOT_JARS matters.
 PRODUCT_BOOT_JARS := \
