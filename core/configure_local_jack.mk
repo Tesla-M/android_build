@@ -13,14 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 ifdef ANDROID_FORCE_JACK_ENABLED
 LOCAL_JACK_ENABLED := $(ANDROID_FORCE_JACK_ENABLED)
 endif
-
 LOCAL_JACK_ENABLED := $(strip $(LOCAL_JACK_ENABLED))
 LOCAL_MODULE := $(strip $(LOCAL_MODULE))
-
 ifneq ($(LOCAL_JACK_ENABLED),full)
 ifneq ($(LOCAL_JACK_ENABLED),incremental)
 ifdef LOCAL_JACK_ENABLED
@@ -31,7 +28,6 @@ endif
 LOCAL_JACK_ENABLED :=
 endif
 endif
-
 ifdef $(LOCAL_MODULE).JACK_VERSION
 LOCAL_JACK_VERSION := $($(LOCAL_MODULE).JACK_VERSION)
 else
