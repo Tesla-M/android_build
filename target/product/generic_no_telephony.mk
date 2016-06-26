@@ -20,7 +20,6 @@
 PRODUCT_PACKAGES := \
     Bluetooth \
     BluetoothMidiService \
-    Camera2 \
     MusicFX \
     Provision \
     SystemUI \
