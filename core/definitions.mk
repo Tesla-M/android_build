@@ -670,6 +670,18 @@ define jack-lib-files
 $(foreach lib,$(1),$(call _jack-lib-full-classes,$(lib),$(2)))
 endef
 
+# $(1): library name
+# $(2): Non-empty if IS_HOST_MODULE
+define _jack-lib-full-dep
+$(call _jack-lib-full-classes,$(1),$(2))
+endef
+
+# $(1): library name list
+# $(2): Non-empty if IS_HOST_MODULE
+define jack-lib-deps
+$(foreach lib,$(1),$(call _jack-lib-full-dep,$(lib),$(2)))
+endef
+
 ###########################################################
 ## Run rot13 on a string
 ## $(1): the string.  Must be one line.
@@ -1880,7 +1892,7 @@ $(call call-jack) \
     $(if $(PRIVATE_RMTYPEDEFS), \
         -D jack.android.remove-typedef="true") \
     $(addprefix --classpath ,$(strip \
-        $(call normalize-path-list,$(PRIVATE_JACK_SHARED_LIBRARIES)))) \
+        $(call normalize-path-list,$(PRIVATE_BOOTCLASSPATH_JAVA_LIBRARIES) $(PRIVATE_JACK_SHARED_LIBRARIES)))) \
     $(addprefix --import ,$(call reverse-list,$(PRIVATE_STATIC_JACK_LIBRARIES))) \
     $(if $(PRIVATE_EXTRA_JAR_ARGS),--import-resource $@.res.tmp) \
     -D jack.import.resource.policy=keep-first \
@@ -1957,7 +1969,7 @@ $(call call-jack) \
     $(if $(NO_OPTIMIZE_DX), \
         -D jack.dex.optimize="false") \
     $(addprefix --classpath ,$(strip \
-        $(call normalize-path-list,$(PRIVATE_JACK_SHARED_LIBRARIES)))) \
+        $(call normalize-path-list,$(PRIVATE_BOOTCLASSPATH_JAVA_LIBRARIES) $(PRIVATE_JACK_SHARED_LIBRARIES)))) \
     $(addprefix --import ,$(call reverse-list,$(PRIVATE_STATIC_JACK_LIBRARIES))) \
     $(if $(PRIVATE_EXTRA_JAR_ARGS),--import-resource $@.res.tmp) \
     -D jack.import.resource.policy=keep-first \
