@@ -23,21 +23,13 @@
 # and the .mk suffix) of the product makefile, "<product_name>:" can be
 # omitted.
 
-# Search for AndroidProducts.mks in the given dir.
-# $(1): the path to the dir
-define _search-android-products-files-in-dir
-$(sort $(shell test -d $(1) && find -L $(1) \
-  -maxdepth 6 \
-  -name .git -prune \
-  -o -name AndroidProducts.mk -print))
-endef
-
 #
 # Returns the list of all AndroidProducts.mk files.
 # $(call ) isn't necessary.
 #
 define _find-android-products-files
-$(foreach d, device vendor product,$(call _search-android-products-files-in-dir,$(d))) \
+$(shell test -d device && find device -maxdepth 6 -name AndroidProducts.mk) \
+  $(shell test -d vendor && find vendor -maxdepth 6 -name AndroidProducts.mk) \
   $(SRC_TARGET_DIR)/product/AndroidProducts.mk
 endef
 
