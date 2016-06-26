@@ -53,5 +53,6 @@ $(full_classes_jack): $(java_sources) $(java_resource_sources) $(full_jack_lib_d
 	@echo Building with Jack: $@
 	$(java-to-jack)
 
+USE_CORE_LIB_BOOTCLASSPATH :=
 LOCAL_IS_STATIC_JAVA_LIBRARY :=
 endif
